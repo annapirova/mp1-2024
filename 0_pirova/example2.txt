@@ -1,0 +1,8 @@
+git checkout -b <new branch>
+git merge <branch>
+git add 
+git commit
+itmm
+
+git pull
+git push
