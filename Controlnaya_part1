@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <Windows.h>
+#include <stdlib.h>
+
+double mid = 0;
+int count = 0;
+int result = 0;
+int result_index = 0;
+
+void create_and_find(int** arr, int n, int m)
+{
+	int elementos;
+	int summo = 0;
+	int i, j;
+	for (i = 0; i < n; i++)
+	{
+		for (j = 0; j < m; j++)
+		{
+			elementos = 1 + rand() % 5;
+			summo += elementos;
+			arr[i][j] = elementos;
+		}
+	}
+	mid = summo / (m * n);
+	printf("mid: %lf\n", mid);
+}
+
+void print_array(int** arr, int n, int m)
+{
+	int i, j;
+	for (i = 0; i < n; i++)
+	{
+		for (j = 0; j < m; j++)
+		{
+			printf("%d ", arr[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void find_result(int** arr, int n, int m)
+{
+	int i, j;
+	for (j = 0; j < m; j++)
+	{
+		count = 0;
+		for (i = 0; i < n; i++)
+		{
+			if (arr[i][j] > mid)
+			{
+				count++;
+			}
+		}
+		if (count > result)
+		{
+			result = count;
+			result_index = j;
+		}
+	}
+}
+
+int main()
+{
+	int n, m, i, j, elementos;
+	printf("Enter strok, than enter stolb:\n");
+	scanf_s("%d", &n);
+	scanf_s("%d", &m);
+
+	//Динамическое создание массива
+	int** arr = (int**)malloc(n * sizeof(int));
+	for (i = 0; i < n; i++)
+	{
+		arr[i] = (int*)malloc(m * sizeof(int));
+	}
+
+	printf("--------------\n");
+
+	create_and_find(arr, n, m);
+
+	printf("--------------\n");
+
+	print_array(arr, n, m);
+
+	printf("--------------\n");
+
+	find_result(arr, n, m);
+
+	printf("result_index: %d\n", result_index);
+	printf("result: %d\n", result);
+
+	printf("--------------\n");
+
+	return 0;
+}
