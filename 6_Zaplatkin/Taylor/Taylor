@@ -1,0 +1,298 @@
+
+#include <stdio.h>
+#include <windows.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
+
+double FirstSin(double x) 
+{
+	return x;
+}
+
+
+double NextSin(double x, int i) 
+{
+	return -(x * x) / ((2*i + 1) * 2*i);
+}
+
+double FirstCos(double x) 
+{
+	return 1;
+}
+
+
+double NextCos(double x, int i) 
+{
+	return -(x * x) / ((2*i - 1) * 2*i);
+}
+
+
+double FirstExp(double x)
+{
+	return 1;
+}
+
+double NextExp(double x, int i)
+{
+	return x / i;
+}
+
+double FirstLog(double x)
+{
+	return x;
+}
+
+double NextLog(double x, int i)
+{
+	return( - (i * x) / (i + 1));
+}
+
+typedef double (First)(double);
+typedef double (Next)(double, int);
+
+double Teyl(double x, int N, int mode, double etal, double acc, First f, Next n) 
+{
+	double prev, next, summ, chek = 1.0;
+	int i;
+	prev = f(x); 
+	summ = prev;
+	for (i = 1; (i < N ) && !(chek < acc); i ++)
+	{
+		next = prev * n(x, i);
+		summ += next;
+		prev = next;
+		chek = fabs(summ - etal);
+	}
+	if (mode == 1)
+	{
+		printf("Terms used: %d\n", i+1);
+	}
+	return summ;
+}
+
+void Once()
+{
+	int fun, N, good=0;
+	double acc, res=0.0, etal, sch, diff, x;
+	printf("Enter X\t\t !!!!!!For ln: -1<x<=1\n");
+	scanf_s("%lf", &x);
+	printf("Enter Accuracy\n");
+	scanf_s("%lf", &acc);
+	printf("Enter N\n");
+	scanf_s("%d", &N);
+	while (!good)
+	{
+		printf("Choise Function\n1. Sin(x)\n2. Cos(x)\n3. Exp(x)\n4. Ln(1+x)\n");
+		scanf_s("%d", &fun);
+		good = 1;
+		switch (fun)
+		{
+		case 1:
+			while (fabs(x) > 2 * M_PI)
+			{
+				if (fabs(x) != x)
+				{
+					x = x + 2 * M_PI;
+				}
+				else
+				{
+					x = x - 2 * M_PI;
+				}
+			}
+			etal = sin(x);
+			printf("Etalon is:%lf\n", etal);
+			sch=Teyl(x, N, 1, etal, acc, FirstSin, NextSin);
+			printf("Calculated is:%lf\n", sch);
+			diff = etal - sch;
+			if (diff < 0)
+			{
+				diff = (-1) * diff;
+			}
+			printf("Difference is:%lf\n", diff);
+			break;
+		case 2:
+			while (fabs(x) > 2 * M_PI)
+			{
+				if (fabs(x) != x)
+				{
+					x = x + 2 * M_PI;
+				}
+				else
+				{
+					x = x - 2 * M_PI;
+				}
+			}
+			etal = cos(x);
+			printf("Etalon is:%lf\n", etal);
+			sch = Teyl(x, N, 1, etal, acc, FirstCos, NextCos);
+			printf("Calculated is:%lf\n", sch);
+			diff = etal - sch;
+			if (diff < 0)
+			{
+				diff = (-1) * diff;
+			}
+			printf("Difference is:%lf\n", diff);
+			break;
+		case 3:
+			etal = exp(x);
+			printf("Etalon is:%lf\n", etal);
+			sch = Teyl(x, N, 1, etal, acc, FirstExp, NextExp);
+			printf("Calculated is:%lf\n", sch);
+			diff = etal - sch;
+			if (diff < 0)
+			{
+				diff = (-1) * diff;
+			}
+			printf("Difference is:%lf\n", diff);
+			break;
+		case 4:
+			etal = log(1+x);
+			printf("Etalon is:%lf\n", etal);
+			sch = Teyl(x, N, 1, etal, acc, FirstLog, NextLog);
+			printf("Calculated is:%lf\n", sch);
+			diff = etal - sch;
+			if (diff < 0)
+			{
+				diff = (-1) * diff;
+			}
+			printf("Difference is:%lf\n", diff);
+			break;
+		default:
+			printf("Command doesn't exist.\n");
+			good = 0;
+			break;
+		}
+	}
+}
+
+void Serial() 
+{
+	int fun, N_max, q=0;
+	double x, diff, etal, sch;
+	int i;
+
+	printf("Enter X\t\t !!!!!!For ln: -1<x<=1\n");
+	scanf_s("%lf", &x);
+	printf("Enter N\n");
+	scanf_s("%d", &N_max);
+	while (!q)
+	{
+		printf("Choise Function\n1. Sin(x)\n2. Cos(x)\n3. Exp(x)\n4. Ln(1+x)\n");
+		scanf_s("%d", &fun);
+		q = 1;
+		switch (fun)
+		{
+		case 1:
+			while (fabs(x) > 2 * M_PI)
+			{
+				if (fabs(x) != x)
+				{
+					x = x + 2 * M_PI;
+				}
+				else
+				{
+					x = x - 2 * M_PI;
+				}
+			}
+			printf("sin(x):\n");
+			for (i = 1; i < N_max + 1; i++)
+			{
+				etal = sin(x);
+				sch = Teyl(x, i, 2, etal, 0.0, FirstSin, NextSin);
+				diff = (etal - sch);
+				if (diff < 0)
+					diff = -diff;
+
+				printf("N = %d\t Calculated is: %lf\t Etalon is: %lf\t Difference is: %lf\n", i, sch, etal, diff);
+			}
+			break;
+
+		case 2:
+			while (fabs(x) > 2 * M_PI)
+			{
+				if (fabs(x) != x)
+				{
+					x = x + 2 * M_PI;
+				}
+				else
+				{
+					x = x - 2 * M_PI;
+				}
+			}
+			printf("cos(x):\n");
+			for (i = 1; i < N_max + 1; i++)
+			{
+				etal = cos(x);
+				sch = Teyl(x, i, 2, etal, 0.0, FirstCos, NextCos);
+				diff = (etal - sch);
+				if (diff < 0)
+					diff = -diff;
+
+				printf("N = %d\t Calculated is: %lf\t Etalon is: %lf\t Difference is: %lf\n", i, sch, etal, diff);
+			}
+			break;
+
+		case 3:
+			printf("exp(x):\n");
+			for (i = 1; i < N_max + 1; i++)
+			{
+				etal = exp(x);
+				sch = Teyl(x, i, 2, etal, 0.0, FirstExp, NextExp);
+				diff = (etal - sch);
+				if (diff < 0)
+					diff = -diff;
+
+				printf("N = %d\t Calculated is: %lf\t Etalon is: %lf\t Difference is: %lf\n", i, sch, etal, diff);
+			}
+			break;
+
+		case 4:
+			printf("Log(1+x):\n");
+			for (i = 1; i < N_max + 1; i++)
+			{
+				etal = log(1 + x);
+				sch = Teyl(x, i, 2, etal, 0.0, FirstLog, NextLog);
+				diff = (etal - sch);
+				if (diff < 0)
+					diff = -diff;
+
+				printf("N = %d\t Calculated is: %lf\t Etalon is: %lf\t Difference is: %lf\n", i, sch, etal, diff);
+			}
+			break;
+
+		default:
+			printf("Command doesn't exist\n");
+			q = 0;
+			break;
+		}
+	}
+}
+
+
+void main()
+{
+	int tmp, exit=0;
+	while (!exit)
+	{
+		{
+			printf("0. Exit\n1. First mode\n2. Second mode\n");
+			scanf_s("%d", &tmp);
+			switch (tmp)
+			{
+			case 0:
+				exit = 1;
+				printf("Have nice day!!");
+				break;
+			case 1:
+				Once();
+				break;
+			case 2:
+				Serial();
+				break;
+			default:
+				printf("Command doesn't exist.\n");
+				break;
+			}
+		}
+	}
+}
