@@ -1,4 +1,7 @@
-git clone
+git checkout -b <new branch>
+git merge <branch>
 git add 
 git commit
-git push
+test1
+test2
+itmm

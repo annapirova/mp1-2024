@@ -1,0 +1,155 @@
+#include <stdio.h>
+#include <windows.h>
+
+void ArrayInput(int n, int m, int**A)
+{
+	int i, j;
+	for (i = 0; i < n; i++)
+	{
+		for (j = 0; j < m; j++)
+		{
+			scanf_s("%d", &A[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+int minArrStol(int m, int n, int** A)
+{
+	int i, j, min=99999, minstol;
+	for (i = 0; i < n; i++) 
+	{
+		for (j = 0; j < m; j++)
+		{
+			if (A[i][j] < min)
+			{
+				min = A[i][j];
+				minstol = j;
+			}
+		}
+	}
+	return(minstol);
+}
+
+void ArrayOutput(int n, int m, int** A)
+{
+	int i, j;
+	for (i = 0; i < n; i++)
+	{
+		for (j = 0; j < m; j++)
+		{
+			printf("%d\t", A[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void N14()
+{
+	int i, j, n, m;
+	printf("n is\n");
+	scanf_s("%d", &n);
+	printf("m is\n");
+	scanf_s("%d", &m);
+	int** A = (int**)malloc(sizeof(int*) * n);
+	for (i = 0; i < n; i++)
+	{
+		A[i] = (int*)malloc(sizeof(int) * m);
+	}
+	ArrayInput(n, m, A);
+	printf("Before Delete\n");
+	ArrayOutput(n, m, A);
+	int minstol = minArrStol(m, n, A);
+	for (i = 0; i < n; i++)
+	{
+		for (j = minstol; j < m - 1; j++)
+		{
+			A[i][j] = A[i][j + 1];
+		}
+	}
+	printf("After Delete\n");
+	ArrayOutput(n, m-1, A);
+}
+
+int MagicStr(int n, int m, int** A, int sum1)
+{
+	int i, j, sumtmp;
+	for (i = 0; i < n; i++)
+	{
+		sumtmp = 0;
+		for (j = 0; j < m; j++)
+		{
+			sumtmp += A[i][j];
+		}
+		if (sumtmp != sum1)
+		{
+			return(0);
+		}
+	}
+	return(1);
+}
+int MagicStl(int n, int m, int** A, int sum1)
+{
+	int i, j, sumtmp;
+	for (j = 0; j < m; j++)
+	{
+		sumtmp = 0;
+		for (i = 0; i < n; i++)
+		{
+			sumtmp += A[i][j];
+		}
+		if (sumtmp != sum1)
+		{
+			return(0);
+		}
+	}
+	return(1);
+}
+
+void N25()
+{
+	int i, j, n, m, sum1=0, strtrue, stltrue;
+	printf("n is\n");
+	scanf_s("%d", &n);
+	m = n;
+	int** A = (int**)malloc(sizeof(int*) * n);
+	for (i = 0; i < n; i++)
+	{
+		A[i] = (int*)malloc(sizeof(int) * m);
+	}
+	ArrayInput(n, m, A);
+	ArrayOutput(n, m, A);
+	for (i = 0; i < n; i++)
+	{
+		sum1 += A[i][0];
+	}
+	strtrue=MagicStr(n, m, A, sum1);
+	stltrue = MagicStl(n, m, A, sum1);
+	if ((strtrue) && (stltrue))
+	{
+		printf("It's Magic square!!\n");
+	}
+	else
+	{
+		printf("It's not Magic square:((\n");
+	}
+}
+
+void main()
+{
+	int tmp;
+	printf("1. Number 14\n2. Number 25\n");
+	scanf_s("%d", &tmp);
+	switch (tmp)
+	{
+	case 1:
+		N14();
+		break;
+	case 2:
+		N25();
+		break;
+	default:
+		printf("This command doesn't exist");
+		break;
+	}
+}
