@@ -1,0 +1,154 @@
+#include "stdio.h"
+#include "stdlib.h"
+#define _USE_MATH_DEFINES
+#include "math.h"
+#include <locale.h>
+
+typedef double(*first)(double);
+typedef double(*next)(int, double);
+
+#define print(a) printf("%lf\n", (a))
+#define fork(a) for (int i =0;i<a;i++)
+
+double first_sin(double x) {
+	return x;
+}
+
+double next_sin(double x, int i) {
+	return -(x * x) / (2 * i * (2 * i + 1));
+}
+
+double first_cos(double x) {
+	return 1;
+}
+
+double next_cos(double x, int i) {
+	return -(x * x) / ((2 * i - 1) * 2 * i);
+}
+
+double first_exp(double x) {
+	return 1;
+}
+
+double next_exp(double x, int i) {
+	return x / i;
+}
+
+double first_cosh(double x) {
+	return 1;
+}
+
+double next_cosh(double x, int i) {
+	return (x * x) / (2 * i * (2*i-1));
+}
+
+static void select_func(int* func) {
+	setlocale(LC_ALL, "RUS");
+	printf("Вберите фунцию:\n");
+	printf("1)Синус\n");
+	printf("2)Косинус\n");
+	printf("3)Эспонента\n");
+	printf("4)Гип. косинус\n");
+	scanf_s("%d", func);
+}
+
+void enter_x(int* x) {
+	setlocale(LC_ALL, "RUS");
+	printf("Введите значение х:\n");
+	scanf_s("%lf", x);
+}
+
+void tochnost(int* eps) {
+	setlocale(LC_ALL, "RUS");
+	printf("Введите точность вычислений:\n");
+	scanf_s("%lf", eps);
+}
+
+void enter_n(int* n) {
+	setlocale(LC_ALL, "RUS");
+	printf("Введите число элементов ряда N:\n");
+	scanf_s("%d", n);
+}
+
+double pipi(double x) {
+	while (x > 2.0 * M_PI)
+	{
+		x -= 2.0 * M_PI;
+	}
+	return x;
+}
+
+double Teylor(double x, int N, int func, double eps, int* cnt, first f, next g) {
+	double summ = f(x);
+	double elem = x;
+	double prew = f(x);
+	if (func != 3) {
+		x = pipi(x);
+	}
+	for (int i = 1; i < N; i++) {
+		elem = prew * g(x, i);
+		summ += elem;
+		prew = elem;
+		*cnt += 1;
+	}
+	return summ;
+}
+
+int main() 
+{
+	setlocale(LC_ALL, "RUS");
+	int act, n, type_f;
+	int cnt = 1;
+	double x, eps;
+	select_func(&type_f);
+	while (type_f != 1 && type_f != 2 && type_f != 3 && type_f != 4) {
+		printf("Неправильный ввод\n");
+		printf("Повторите ввод\n");
+		select_func(&type_f);
+	}
+	tochnost(&eps);
+	while (eps>0.0 && eps<0.000001) {
+		printf("Неправильный ввод\n");
+		printf("Повторите ввод\n");
+		tochnost(&type_f);
+	}
+	if (type_f == 3) {
+		enter_n(&n);
+		enter_x(&x);
+		double y = Teylor(x,n,type_f, eps, &cnt, first_exp, next_exp);
+		printf("Эталонное значение Экспонента: &lf\n", exp(x));
+		printf("Вычесленная оценка: &lf\n", y);
+		printf("Разница: &lf\n", fabs(y-exp(x)));
+		printf("Кол-во слагаемых: %d\n", cnt);
+	}
+	else if (type_f == 1) {
+		enter_n(&n);
+		enter_x(&x);
+		double y = Teylor(x, n, type_f, eps, &cnt, first_sin, next_sin);
+		printf("Эталонное значение Экспонента: &lf\n", cos(x));
+		printf("Вычесленная оценка значения: &lf\n", y);
+		printf("Разница: &lf\n", fabs(y - sin(x)));
+		printf("Кол-во слагаемых: %d\n", cnt);
+	}
+	else if (type_f == 2) {
+		enter_n(&n);
+		enter_x(&x);
+		double y = Teylor(x, n, type_f, eps, &cnt, first_cos, next_cos);
+		printf("Эталонное значение Экспонента: &lf\n", cos(x));
+		printf("Вычесленная оценка значения: &lf\n", y);
+		printf("Разница: &lf\n", fabs(y - cos(x)));
+		printf("Кол-во слагаемых: %d\n", cnt);
+	}
+	else if (type_f == 3) {
+		enter_n(&n);
+		enter_x(&x);
+		double y = Teylor(x, n, type_f, eps, &cnt, first_cosh, next_cosh);
+		printf("Эталонное значение Экспонента: &lf\n", cosh(x));
+		printf("Вычесленная оценка значения: &lf\n", y);
+		printf("Разница: &lf\n", fabs(y - cosh(x)));
+		printf("Кол-во слагаемых: %d\n", cnt);
+	}
+
+}
+
+// не доделал, не могу понять, почему у меня не дает ввести N и Х
