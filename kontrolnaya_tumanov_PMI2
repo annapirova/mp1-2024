@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <locale.h>
+#include "stdlib.h"
+
+void main1()
+{
+	//Задача 1
+
+	int  oconc[100], i, j, kolic_oconc = 0, kolic_perv, kolic_vtor;
+	int* perv;
+	int* vtor;
+	int* tret;
+	setlocale(LC_ALL, "Russian");
+	printf("Введи количество элементов в первом массиве \n");
+	scanf_s("%d", &kolic_perv);
+	perv = (int*)malloc(sizeof(int) * kolic_perv);
+	printf("Введи первый массив, состоящий из %d элементов \n", kolic_perv);
+	for (i = 0; i < kolic_perv; i++)
+		scanf_s("%d", &(perv[i]));
+	printf("Введи количество элементов во втором массиве \n");
+	scanf_s("%d", &kolic_vtor);
+	vtor = (int*)malloc(sizeof(int) * kolic_vtor);
+	printf("Введи второй массив, состоящий из %d элементов \n", kolic_vtor);
+	for (i = 0; i < kolic_vtor; i++)
+		scanf_s("%d", &vtor[i]);
+	tret = (int*)malloc(sizeof(int) * (kolic_perv + kolic_vtor));
+	for (i = 0; i < kolic_perv; i++)
+		tret[i] = perv[i];
+	for (i = 0; i < kolic_vtor; i++)
+		tret[i + kolic_perv] = vtor[i];
+	for (i = 0; i < (kolic_perv + kolic_vtor); i++)
+	{
+		for (j = 0; j < kolic_oconc; j++)
+			if (tret[i] == oconc[j])
+				break;
+		if (j == kolic_oconc)
+		{
+			oconc[kolic_oconc] = tret[i];
+			kolic_oconc++;
+		}
+	}
+	printf("Окончательный массив из двух и без повторений \n");
+	for (i = 0; i < kolic_oconc; i++)
+		printf("%d ", oconc[i]);
+	printf("\n");
+}
+	//Задача 2
+void main2()
+{
+	int m, n,i,j,sums=0,k,maxi=0,index_maxi=0;
+	double A[100][100],mid;
+	setlocale(LC_ALL, "Russian");
+	printf("Введи число строк в матрице \n");
+	scanf_s("%d", &m);
+	printf("Введи число столбцов в матрице \n");
+	scanf_s("%d", &n);
+	for (i = 0; i < m; i++)
+		for (j = 0; j < n; j++)
+			A[i][j] = rand();
+	printf("Вот матрица, которая получилась \n");
+	for (i = 0; i < m; i++)
+	{
+		for (j = 0; j < n; j++)
+			printf("%.2f ", A[i][j]);
+		printf("\n");
+	}
+	for (i = 0; i < m; i++)
+		for (j = 0; j < n; j++)
+			sums += A[i][j];
+	mid = sums / (m * n);
+	printf("Среднее значение в матрице равно %.2f \n",mid);
+	for (j = 0; j < n; j++)
+	{
+		k = 0;
+		for (i = 0; i < m; i++)
+			if (A[i][j] > mid)
+				k++;
+		if (k > maxi)
+		{
+			index_maxi = j;
+			maxi = k;
+		}
+	}
+	printf("Столбец матрицы, в котором больше всего значений, больших СРЕДНЕГО это столбец с индексом %d \nКоличество чисел в нём, которые больше СРЕДНЕГО, равно %d \n", index_maxi, maxi);
+	printf("\n");
+}
+
+int main()
+{
+	int c=0;
+	setlocale(LC_ALL, "Russian");
+	printf("1. Задача 1 на Одномерные массивы (Задача 2 из файла) \n");
+	printf("2. Задача 2 на Двумерные массивы (Задача 2 из презентации) \n");
+	printf("3. Exit \n");
+	while (c != 3)
+	{
+		printf("Выбери пункт из меню \n");
+		scanf_s("%d", &c);
+		if (c == 1)
+			main1();
+		else if (c == 2)
+			main2();
+	}
+}

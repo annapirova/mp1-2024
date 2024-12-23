@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <string.h>
+#include <locale.h>
+#include <stdlib.h>
+#include <ctype.h>
+#pragma warning(disable : 4996)
+
+
+//Структура для хранения информации о Товаре
+struct Product
+{
+	char barcode[10];
+	char name[50];
+	double price_per_kg;
+	double quantity;
+};
+
+//Массив "Товаров" находящихся на складе
+struct Product warehouse[] = {
+	{"0","Milk", 50.0, 10.0},
+	{"1","Bread",20.0,5.0},
+	{"3456789012", "Egg", 100.0, 2.0},
+	{"4567890123", "Chesse", 250.0, 3.0},
+	{"5678901234", "Tomato", 80.0, 4.0}
+};
+
+//Массив купленных товаров "Товаров" (Чек)
+struct Product Checkout[100];
+
+
+int main()
+{
+	int kolic, count = 0, i, k, j = 0;
+	char str[100];
+	char* token;
+	char Del[] = " ,._";
+	char Words[100][30];
+	char Tokens[30][100];
+	setlocale(LC_ALL, "Russian");
+	printf("Введи список покупок, чтобы завершить ввод, введи пустую строку\n");
+	gets(str);
+	strcpy(Words[count], str);
+	k = strlen(str);
+	while (k!=0)
+	{
+		count++;
+		gets(str);
+		k=strlen(str);
+		strcpy(Words[count], str);
+	}
+	printf("Вот твой список покупок: \n");
+	for (i = 0; i < count; i++)
+		printf("%s \n", Words[i]);
+	for (i = 0; i < count; i++)
+	{
+		token = strtok(Words[i], Del);
+		while (token != NULL)
+		{
+			strcpy(Tokens[j], token);
+			token = strtok(NULL, Del);
+			j++;
+		}
+	}
+	for (i = 0; i < j; i++)
+	{
+		token = "5";
+		printf("%s ", Tokens[i]);
+		if (isdigit(token))
+			printf("Число");
+	}

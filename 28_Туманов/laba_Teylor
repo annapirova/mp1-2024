@@ -1,0 +1,172 @@
+#include <stdio.h>
+#include <locale.h>
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <stdlib.h>
+void print_menu()
+{
+	printf("0. Синус \n");
+	printf("1. Косинус \n");
+	printf("2. Экспонента \n");
+	printf("3. Арккотангенс \n");
+	printf("4. Exit \n");
+}
+
+//Первый синус
+double FirstSin(double x)
+{
+	return x;
+}
+//Следующий синус
+double NextSin(double x, int i)
+{
+	return (-x * x / (i-1) / i);
+}
+//Первый косинус
+double FirstCos(double x)
+{
+	return 1;
+}
+//Следующий косинус
+double NextCos(double x,int i)
+{
+	i--;
+	return (-x * x / (i - 1) / i);
+}
+//Первая экспонента
+double FirstExp(double x)
+{
+	return 1;
+}
+//Следующая экспонента
+double NextExp(double x, int i)
+{
+	i--;
+	return x / i;
+}
+//Первый арккотангенс 
+double FirstARCCOT(double x)
+{
+	return M_PI_2-x;
+}
+//Следующий арккотангенс
+double NextARCCOT(double x, int i)
+{
+	if (i == 3)
+		return (x * (-1) + M_PI_2) * (-x * x / i);
+	else
+		return x * (i - 2) * (-x) * x / i;
+}
+typedef double(*First)(double);
+typedef double(*Next)(double,int);
+//Тейлор режим 1
+double Teylor(double x, int N, First f, Next g, int h, double eps, double rez)
+{
+	double prev = f(x);
+	double next = 0;
+	double sums = 0.0;
+	int i = 1, shag = h;
+	while (fabs(sums - rez) > eps)
+	{
+		if (i == 1)
+			sums += prev;
+		else
+		{
+			next = prev * g(x, i);
+			sums += next;
+			prev = next;
+		}
+		i += shag;
+	}
+	printf("Исходное значение - %lf \n", rez);
+	printf("Посчитанное значение - %lf \n", sums);
+	printf("Разница в значениях - %lf \n", fabsl(rez - sums));
+	printf("Количество слагаемых, которое было вычисленно равно %d \n", i);
+	return sums;
+}
+//Тйлор режим 2
+double TeylorTwo(double x, int N, First f, Next g, int h, double eps, double rez)
+{
+	double prev = f(x);
+	double next = 0;
+	double sums = 0.0;
+	int i = 1, shag = h;
+	while (N >= i)
+	{
+		if (i == 1)
+			sums += prev;
+		else
+		{
+			next = prev * g(x, i);
+			sums += next;
+			prev = next;
+		}
+		printf("N= %d Разница в значениях = %lf \n", i, fabsl(rez - sums));
+		i += shag;
+	}
+	return sums;
+}
+int main()
+{
+	int N;
+	double eps;
+	double x, y;
+	int c1=0;
+	int c2 = 0;
+	int k = 0, kol = 0;
+	setlocale(LC_ALL, "Russian");
+	printf("Введи точку x, в которой хочешь найти значение функции \n");
+	scanf_s("%lf", &x);
+	printf("Введи число элементов ряда для выполнения расчёта (N) \n");
+	scanf_s("%d", &N);
+	printf("Введи точность вычисления (eps) \n");
+	scanf_s("%lf", &eps);
+	printf("Первый режим Тейлора \n");
+	printf("Ввыбери функцию из перечня \n");
+	print_menu();
+	while (x > M_PI * 2)
+	{
+		x=x- M_PI * 2;
+	}
+	while (c1!=4)
+	{
+		scanf_s("%d", &c1);
+		switch (c1)
+		{
+			case 0:
+				y = Teylor(x, N, FirstSin, NextSin, 2, eps, sin(x));
+			break;
+			case 1:
+				y = Teylor(x, N, FirstCos, NextCos, 2, eps, cos(x));
+			break;
+			case 2:
+				y = Teylor(x, N, FirstExp, NextExp, 1, eps, exp(x));
+			break;
+			case 3:
+				y = Teylor(x, N, FirstARCCOT, NextARCCOT, 1, eps, atan(x));
+			break;
+		}
+	}
+	printf("Второй режим Тейлора \n");
+	print_menu();
+	while (c2 != 4)
+	{
+		scanf_s("%d", &c2);
+		switch (c2)
+		{
+			case 0:
+				y = TeylorTwo(x, N, FirstSin, NextSin, 2, eps, sin(x));
+			break;
+			case 1:
+				y = TeylorTwo(x, N, FirstCos, NextCos, 2, eps, cos(x));
+			break;
+			case 2:
+				y = TeylorTwo(x, N, FirstExp, NextExp, 1, eps, exp(x));
+			break;
+			case 3:
+				y = TeylorTwo(x, N, FirstARCCOT, NextARCCOT, 1, eps, atan(x));
+			break;
+		}
+	}
+}

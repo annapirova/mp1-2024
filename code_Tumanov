@@ -1,0 +1,495 @@
+#include <stdio.h>
+#include <locale.h>
+#include <stdlib.h>
+#include <windows.h>
+
+void print_menu()
+{
+	printf("0. Input array \n"); //Ввод массива пользователем +
+	printf("1. Generation array \n"); //Генерация рандомного массива +
+	printf("2. Bubble Sort \n"); //Сортировка массива пузырьком +
+	printf("3. VIP Bubble Sort \n"); //Сортировка массива супер пузырьком (двунаправленный) 
+	printf("4. Insert Sort \n"); //Сортировка массива вставкой +
+	printf("5. Choice Sort \n"); //Сортировка массива выбором +
+	printf("6. Merge Sort \n"); //Сортировка массива слиянием
+	printf("7. Counting Sort \n"); //Сортировка массива подсчётом +
+	printf("8. Quick Sort \n"); //Сортировка массива Хоара ("быстрая") +
+	printf("9. Linear Search \n"); //Линейный поиск +
+	printf("10. Binary Search \n"); //Бинарный поиск +
+	printf("11. Exit \n"); //Выход из программы
+}
+//Функция ввода массива пользователем
+void Input_array(int A[], int n)
+{
+	int i;
+	printf("Введи массив, состоящий из %d элементов \n", n);
+	for (i = 0; i < n; i++)
+		scanf_s("%d", &A[i]);
+	printf("Вот твой массив \n");
+	for (i = 0; i < n; i++)
+		printf("%d ", A[i]);
+	printf("\n");
+}
+//Функция копирования массива
+void Copy_array(int A[], int B[], int n)
+{
+	int i;
+	for (i = 0; i < n; i++)
+		B[i] = A[i];
+}
+//Функция генерации рандомного массива
+void Generation_array(int A[], int n)
+{
+	int i;
+	for (i = 0; i < n; i++)
+		A[i] = rand();
+	printf("Вот твой сгенерированный массив \n");
+	for (i = 0; i < n; i++)
+		printf("%d ", A[i]);
+	printf("\n");
+}
+//Функция сортировки массива Пузырьком
+void Bubble_Sort(int A[], int n,double Time[],int Swaps[])
+{
+	int i, j, c,kolic_sravn=0,kolic_perest=0;
+	for (i = 0; i < n; i++)
+	{
+		for (j = i; j < n; j++)
+		{
+			if (A[i] > A[j])
+			{
+				c = A[i];
+				A[i] = A[j];
+				A[j] = c;
+				kolic_perest++; //Увеличиваем количество перестановок
+			}
+			kolic_sravn++; //Увеличиваем количество сравнений
+		}
+	}
+	printf("Bubble Sort \n");
+	for (i = 0; i < n; i++)
+		printf("%d ", A[i]);
+	printf("\n");
+	printf("Количество сравнений равно %d \n", kolic_sravn);
+	printf("Количество перестановок равно %d \n", kolic_perest);
+}
+//Функция Сортировки Супер Пузырьком
+void VIP_Bubble_Sort(int A[], int n)
+{
+	int i, left = 0, right = (n - 1),c,kolic_sravn=0,kolic_perest=0;
+	while (left <= right)
+	{
+		for (i = left; i < right; i++)
+		{
+			if (A[i] > A[i + 1])
+			{
+				c = A[i];
+				A[i] = A[i + 1];
+				A[i + 1] = c;
+				kolic_perest++; //Увеличиваем количество перестановок
+			}
+			kolic_sravn++; //Увеличиваем количество сравнений
+		}
+		right--;
+		for (i = right; i > left; i--)
+		{
+			if (A[i - 1]>A[i])
+			{
+				c = A[i];
+				A[i] = A[i - 1];
+				A[i - 1] = c;
+				kolic_perest++; //Увеличиваем количество перестановок
+			}
+			kolic_sravn++; //Увеличиваем количество сравнений
+		}
+		left++;
+	}
+	printf("VIP Bubble Sort \n");
+	for (i = 0; i < n; i++)
+		printf("%d ", A[i]);
+	printf("\n");
+	printf("Количество сравнений равно %d \n", kolic_sravn);
+	printf("Количество перестановок равно %d \n", kolic_perest);
+}
+//Функция Сортировки массива Вставкой
+void Insert_Sort(int A[], int n,double Time[],int Swaps[])
+{
+	int pos, val, k, i,kolic_sravn=0,kolic_perest=0;
+	for (pos = 1; pos < n; pos++)
+	{
+		val = A[pos];
+		k = pos;
+		for (k = pos - 1; ((k >= 0) && (A[k] > val)); k--)
+		{
+			kolic_sravn++; //Увеличиваем количество сравнений
+			A[k + 1] = A[k];//сдвиг
+			kolic_perest++; //Увеличиваем количество перестановок
+		}
+
+		A[k + 1] = val;
+		kolic_perest++; //Увеличиваем количество перестановок
+	}
+	printf("Insert Sort \n");
+	for (i = 0; i < n; i++)
+		printf("%d ", A[i]);
+	printf("\n");
+	printf("Количество сравнений равно %d \n", kolic_sravn);
+	printf("Количество перестановок равно %d \n", kolic_perest);
+}
+//Функция Сортировки массива Выбором
+void Choice_Sort(int A[], int n, double Time[], int Swaps[])
+{
+	int pos, index, index_min, tmp, i, kolic_sravn = 0, kolic_perest = 0;
+	for (pos = 0; pos < n; pos++)
+	{
+		index_min = pos;
+		for (index = (pos + 1); index < n; index++)
+		{
+			if (A[index_min] > A[index])
+				index_min = index;
+			kolic_sravn++; //Увеличиваем количество сравнений
+		}
+		tmp = A[index_min];
+		A[index_min] = A[pos];
+		A[pos] = tmp;
+		kolic_perest++; //Увеличиваем количество перестановок
+	}
+	printf("Choice Sort \n");
+	for (i = 0; i < n; i++)
+		printf("%d ", A[i]);
+	printf("\n");
+	printf("Количество сравнений равно %d \n", kolic_sravn);
+	printf("Количество перестановок равно %d \n", kolic_perest);
+}
+
+//Функция Сортировки массива Слиянием
+void Merge_Sort(int A[], int left, int right)
+{
+	printf("No work (: \n");
+}
+/*void Merge_Sort(int A[], int left, int right)
+{
+	int mid;
+	if (left < right) 
+	{
+		mid = (left + right) / 2;
+		merge_sort(A, left, mid);
+		merge_sort(A, mid + 1, right);
+		merge(A, left, mid, right);
+	}
+}
+//Функция слияния упорядоченных массивов
+void merge(int A[], int left, int mid, int right)
+{
+	int i, j, k;
+	int n1 = mid - left + 1;
+	int n2 = right - mid;
+	int L[100], R[100];
+	for (i = 0; i < n1; i++)
+		L[i] = A[left + i];
+	for (j = 0; j < n2; j++)
+		R[j] = A[mid + j + 1];
+	i = 0;
+	j = 0;
+	k = left;
+	while (i < n1 && j < n2)
+	{
+		if (L[i] <= R[j])
+		{
+			A[k] = L[i];
+			i++;
+		}
+		else
+		{
+			A[k] = R[j];
+			j++;
+		}
+		k++;
+	}
+	while (i < n1)
+	{
+		A[k] = L[i];
+		i++;
+		k++;
+	}
+	while (j < n2)
+	{
+		A[k] = R[j];
+		j++;
+		k++;
+	}
+}*/
+//Функция Сортировки массива Подсчётом
+void Counting_Sort(int A[], int n, double Time[], int Swaps[])
+{
+	int i, j, k, B[1000], c, kolic_sravn = 0, kolic_perest = 0;
+	for (c = 0; c < n; c++)
+		B[c] = 0;
+	for (i = 0; i < n; i++)
+	{
+		k = 0;
+		for (j = 0; j < n; j++)
+			if ((j != i) && (A[j] < A[i]))
+			{
+				kolic_sravn++; //Увеличивааем количество сравнений
+				k++;
+			}
+		B[k] = A[i];
+		kolic_perest++; //Увеличиваем количество перестановок
+	}
+	printf("Counting Sort \n");
+	for (c = 0; c < n; c++)
+		printf("%d ", B[c]);
+	printf("\n");
+	printf("Количество сравнений равно %d \n", kolic_sravn);
+	printf("Количество перестановок равно %d \n", kolic_perest);
+}
+//Функция Сортировки массива Хоара ("Быстрая сортировка")
+void Quick_Sort(int A[], int left, int right)
+{
+	int i, last,temp,kolic_sravn=0,kolic_perest=0;
+	if (left < right) 
+	{
+		int pivot = left;
+		i = left;
+		last = right;
+		while (i <= last) 
+		{
+			while (A[i] < A[pivot] && i <= last)
+			{
+				i++;
+				kolic_sravn++;
+			}
+			while (A[last] > A[pivot])
+			{
+				last--;
+				kolic_sravn++;
+			}
+			if (i <= last)
+			{
+				temp = A[i];
+				A[i] = A[last];
+				A[last] = temp;
+				kolic_perest++;
+				i++;
+				last--;
+				kolic_sravn++;
+			}
+		}
+		Quick_Sort(A, left, last);
+		Quick_Sort(A, i, right);
+	}
+}
+//Функция Линейного поиска
+void Linear_Search(int A[], int n)
+{
+	int val, i, k = -1,kolic_sravn=0;
+	printf("Введи значение, которое хочешь найти в массиве \n");
+	scanf_s("%d", &val);
+	for (i = 0; i < n; i++)
+	{
+		if (A[i] == val)
+		{
+			k = i;
+			break;
+		}
+		kolic_sravn++; //Увеличиваем количество сравнений
+	}
+	if (k > -1)
+		printf("Значение, которое вы ищете емеется в массиве и его индекс равен %d \n", k);
+	else
+		printf("Данного значения нет в массиве \n");
+	printf("Количество сравнений равно %d \n", kolic_sravn);
+}
+//Функция Бинарного поиска
+void Binary_Search(int A[], int n)
+{
+	int left, right, m, val, f = 0,kolic_sravn=0;
+	printf("Введи значение, которое хочешь найти в массиве \n");
+	scanf_s("%d", &val);
+	left = 0;
+	right = n - 1;
+	while ((left < right) && (!f))
+	{
+		m = (left + right) / 2;
+		if (val > A[m])
+		{
+			left = m + 1;
+			kolic_sravn++; //Увеличиваем количество сравнений на 1 единицу
+		}
+		else if (val < A[m])
+		{
+			right = m - 1;
+			kolic_sravn++; //Увеличиваем количество сравнений на 2 единицы
+		}
+		else
+		{
+			f = 1;
+			kolic_sravn++; //Увеличиваем количество сравнений на 2 единицы
+		}
+	}
+	if (f)
+		printf("Элемент найден и его индекс равен %d \n", m);
+	else
+		printf("Элемент не найден \n");
+	printf("Количество сравнений равно %d \n", kolic_sravn);
+}
+//Главная программа
+int main()
+{
+	int c = 1;
+	int n;
+	int A[10000];
+	int Acopy[10000];
+	double Time[7];
+	int SwapCount[7];
+	int status = 0;
+	LARGE_INTEGER freq, start, finish;
+	double time;
+
+	QueryPerformanceFrequency(&freq);
+
+	setlocale(LC_ALL, "Russian");
+	while (c != 11)
+	{
+		print_menu();
+		scanf_s("%d", &c);
+		//Copy_array(A, Acopy, n);
+		switch (c)
+		{
+		case 0:
+			printf("Введи количество элементов в массиве \n");
+			scanf_s("%d", &n);
+			Input_array(A, n);
+			status = 1;
+			break;
+		case 1:
+			printf("Введи количество элементов в массиве \n");
+			scanf_s("%d", &n);
+			Generation_array(A, n);
+			status = 1;
+			break;
+		case 2:
+			if (status > 0)
+			{
+				Copy_array(A, Acopy, n); //Копирование массива
+				QueryPerformanceCounter(&start);
+				Bubble_Sort(Acopy, n,Time,SwapCount);
+				QueryPerformanceCounter(&finish);
+				time = (double)(finish.QuadPart -
+					start.QuadPart) / (double)freq.QuadPart;
+				status = 2;
+				Time[0] = time;
+				printf("Bubble_Sort time = %.5f\n", Time[0]);
+			}
+			else printf("Input array or Generation array \n"); break;
+		case 3:
+			if (status > 0)
+			{
+				Copy_array(A, Acopy, n); //Копирование массива
+				QueryPerformanceCounter(&start);
+				VIP_Bubble_Sort(Acopy, n);
+				QueryPerformanceCounter(&finish);
+				time = (double)(finish.QuadPart -
+					start.QuadPart) / (double)freq.QuadPart;
+				status = 2;
+				Time[5] = time;
+				printf("VIP_Bubble_Sort time = %.5f\n", Time[5]);
+			}
+			else printf("Input array or Generation array \n"); break;
+		case 4:
+			if (status > 0)
+			{
+				Copy_array(A, Acopy, n); //Копирование массива
+				QueryPerformanceCounter(&start);
+				Insert_Sort(Acopy, n,Time,SwapCount);
+				QueryPerformanceCounter(&finish);
+				time = (double)(finish.QuadPart -
+					start.QuadPart) / (double)freq.QuadPart;
+				status = 2;
+				Time[1] = time;
+				printf("Insert_Sort time = %.5f\n", Time[1]);
+			}
+			else printf("Input array or Generation array \n"); break;
+		case 5:
+			if (status > 0)
+			{
+				Copy_array(A, Acopy, n); //Копирование массива
+				QueryPerformanceCounter(&start);
+				Choice_Sort(Acopy, n, Time, SwapCount);
+				QueryPerformanceCounter(&finish);
+				time = (double)(finish.QuadPart -
+					start.QuadPart) / (double)freq.QuadPart;
+				status = 2;
+				Time[2] = time;
+				printf("Choice_Sort time = %.5f\n", Time[2]);
+			}
+			else printf("Input array or Generation array \n"); break;
+		case 6:
+			if (status > 0)
+			{
+				int i;
+				Copy_array(A, Acopy, n); //Копирование массива
+				Merge_Sort(Acopy, 0, (n - 1));
+				// Дальше закомментировано, так как функция Сортировки слиянием не работает (
+				/*for (i = 0; i < n; i++)
+					printf("%d ", Acopy[i]);
+				printf("\n");*/
+				status = 2;
+			}
+			else printf("Input array or Generation array \n"); break;
+		case 7:
+			if (status > 0)
+			{
+				Copy_array(A, Acopy, n); //Копирование массива
+				QueryPerformanceCounter(&start);
+				Counting_Sort(Acopy, n,Time,SwapCount);
+				QueryPerformanceCounter(&finish);
+				time = (double)(finish.QuadPart -
+					start.QuadPart) / (double)freq.QuadPart;
+				status = 2;
+				Time[3] = time;
+				printf("Counting_Sort time = %.5f\n", Time[3]);
+			}
+			else printf("Input array or Generation array \n"); break;
+		case 8:
+			if (status > 0)
+			{
+				int i;
+				Copy_array(A, Acopy, n); //Копирование массива
+				QueryPerformanceCounter(&start);
+				Quick_Sort(Acopy, 0, (n - 1));
+				QueryPerformanceCounter(&finish);
+				time = (double)(finish.QuadPart -
+					start.QuadPart) / (double)freq.QuadPart;
+				printf("Quick Sort \n");
+				for (i = 0; i < n; i++)
+					printf("%d ", Acopy[i]);
+				printf("\n");
+				status = 2;
+				Time[4] = time;
+				printf("Quick_Sort time = %.5f\n", Time[4]);
+			}
+			else printf("Input array or Generation array \n"); break;
+		case 9:
+			if (status > 0)
+			{
+				Copy_array(A, Acopy, n); //Копирование массива
+				Linear_Search(Acopy, n);
+				status = 2;
+			}
+			else printf("Input array or Generation array \n"); break;
+		case 10:
+			if (status > 1)
+			{
+				Copy_array(Acopy, Acopy, n); //Копирование массива
+				Binary_Search(Acopy, n);
+				status = 2;
+			}
+			else if (status = 0)
+				printf("Input array or Generation array \n");
+			else if (status = 1)
+				printf("Sort the array!!! \n");
+		}
+	}
+}
