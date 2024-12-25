@@ -1,0 +1,88 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include<ctype.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Towar { char* name; double price; double quantity; };
+
+typedef struct Towar Towar;
+
+struct Spisok { char* name; double quantity; };
+
+typedef struct Spisok Spisok;
+
+char* toLower(char* str) {
+    for (char* p = str; *p; p++) *p = tolower(*p);
+    return str;
+}
+
+int main()
+{
+    struct Towar sklad[] = {
+        {"banana", 159.9, 1000000.0},
+        {"apple" ,142.0, 1000000.0},
+        {"orange", 29.9, 1000000.0},
+        {"tomato", 218.9, 1000000.0},
+        {"cucumber", 249.9, 1000000.0},
+        {"onion", 175.0, 1000000.0},
+        {"water", 52.0, 1000000.0},
+        {"cola", 99.9, 1000000.0},
+        {"bread", 43.5, 1000000.0}
+    };
+    int kol[10];
+    int i, j, n = 4, yes=-1;
+    double timed, total=0;
+    char buf[256];
+    char c[10][100];
+    char chekline;
+    char* str1[100];
+    char* str2[100];
+    char* filename = "cheks.txt";
+    FILE* fp = fopen(filename, "w");
+    char* message = "______________________________________\nName\tQuantity\tPrice\n";
+    if (fp)
+    fprintf(fp, "______________________________________\nName\tQuantity\tPrice\n");
+    char qwe[100];
+    char qwer[100];
+    Spisok spisok[100];
+    for (i = 0; i < n; i++)
+    {
+        fgets(buf, 256, stdin);
+        if (sscanf(buf, " %lf %s", &spisok[i].quantity, &spisok[i].name) != 2)
+        {
+            sscanf(buf, "%s %lf", &spisok[i].name, &spisok[i].quantity);
+        }
+    }
+    printf("Redacted spisok:\n");
+    for (j = 0; j < n; j++)
+    {
+        toLower(&spisok[j].name);
+        printf("%s %lf\n", &spisok[j].name , spisok[j].quantity);
+    }
+    printf("%s", message);
+    for (i = 0; i < n; i++)
+    {
+        yes = -1;
+        for (j = 0; j < 9; j++)
+        {
+            if (strcmp(&spisok[i].name, sklad[j].name) == 0)
+            {
+                yes = j;
+            }
+        }
+        if (yes > -1)
+        {
+            
+            timed = (spisok[i].quantity) * (sklad[yes].price);
+            total += timed;
+            fprintf(fp, "%s\t", sklad[yes].name);
+            fprintf(fp, "%lf\t", spisok[i].quantity);
+            fprintf(fp, "%lf\n", (spisok[i].quantity) * (sklad[yes].price));
+            printf("%s\t%lf\t%lf\n", sklad[yes].name, spisok[i].quantity, (spisok[i].quantity) * (sklad[yes].price));
+        }
+    }
+    printf("______________________________________\ntotal:\t%lf\n______________________________________\n", total);
+    fprintf(fp, "______________________________________\ntotal:\t%lf\n______________________________________\n", total);
+    return 0;
+}
