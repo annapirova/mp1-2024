@@ -1,0 +1,137 @@
+#include <stdio.h>
+#include <string.h>
+#include <locale.h>
+#include <stdlib.h>
+#include <ctype.h>
+#pragma warning(disable : 4996)
+
+//Структура для хранения информации о Товаре
+struct Product
+{
+	char name[50][100];
+	double price_per_kg;
+	double quantity;
+};
+
+//Массив "Товаров" находящихся на складе
+struct Product warehouse[] = {
+	{{"milk"}, 50.0 , 10.0},
+	{{"bread"}, 20.0, 5.0},
+	{{"egg"}, 100.0, 2.0 },
+	{{"cheese"}, 250.0, 3.0},
+	{{"tomato"}, 80.0, 4.0}
+};
+
+//Массив купленных товаров "Товаров" (Чек)
+struct Product Checkout[100];
+
+//Функция перевода строки в нижний регистр
+void stringToLower(char* str) 
+{
+	for (int i = 0; str[i] != '\0'; i++)
+	{
+		str[i] = tolower(str[i]);
+	}
+}
+int main()
+{
+	int count = 0, i, k, j = 0, t,c;
+	char str[100];
+	char* token;
+	char Del[] = " ";
+	char Words[100][30];
+	char Tokens[30][100];
+	setlocale(LC_ALL, "Russian");
+	printf("Введи список покупок, чтобы завершить ввод, введи пустую строку\n");
+	fgets(str, sizeof(str), stdin);
+	str[strcspn(str, "\n")] = '\0';
+	strcpy(Words[count], str);
+	k = strlen(str);
+	while (k != 0)
+	{
+		count++;
+		// Заменяем gets на fgets и удаляем '\n'
+		fgets(str, sizeof(str), stdin);
+		str[strcspn(str, "\n")] = '\0';
+		k = strlen(str);
+		strcpy(Words[count], str);
+	}
+	char words_temp[100];
+	for (i = 0; i < count; i++)
+	{
+		strcpy(words_temp, Words[i]);
+		token = strtok(words_temp, Del);
+		while (token != NULL)
+		{
+			strcpy(Tokens[j], token);
+			token = strtok(NULL, Del);
+			j++;
+		}
+	}
+	k = 0;
+	for (t = 0; t < count; t++)
+	{
+		char temp[100];
+		if (strlen(Words[t])==(strlen(Tokens[t])))
+		{
+			strcpy(Checkout[t].name, Words[t]);
+			Checkout[t].quantity = 0.0; //Надо поменять на количество со склада
+			k++;
+		}
+		else
+		{
+			double temp_quantity = 1.0;
+			char temp_name[100] = "";
+			if (sscanf_s(Tokens[k], "%lf", &temp_quantity))
+			{
+				Checkout[t].quantity = temp_quantity;
+				strcpy(Checkout[t].name, Tokens[k + 1]);
+				k+=2;
+			}
+			else
+			{
+				Checkout[t].quantity = atof(Tokens[k + 1]);
+				strcpy(Checkout[t].name, Tokens[k]);
+				k+=2;
+			}
+		}
+	}
+	for (i = 0; i < count; i++)
+	{
+		char str[100];
+		int f = 0;
+		strcpy(str, Checkout[i].name);
+		for (j = 0; j < 5; j++)
+		{
+
+			stringToLower(str);
+			if (strcmp(warehouse[j].name, str) == 0)
+			{
+				f = 1;
+				if ((Checkout[i].quantity >= warehouse[j].quantity) || (Checkout[i].quantity == 0.0))
+				{
+					Checkout[i].quantity = warehouse[j].quantity;
+					Checkout[i].price_per_kg = Checkout[i].quantity * warehouse[j].price_per_kg;
+				}
+				else
+					Checkout[i].price_per_kg = Checkout[i].quantity * warehouse[j].price_per_kg;
+			}
+		}
+		if (f == 0)
+			Checkout[i].quantity = -1;
+	}
+	printf("Чек: \n");
+	double sums = 0.0;
+	for (i = 0; i < count; i++)
+	{
+		if (Checkout[i].quantity == -1)
+			printf("Товар %s не найден на складе \n", Checkout[i].name);
+		else
+		{
+			printf("Товар: %s, количество - %.2lf, цена = %.2lf \n", Checkout[i].name, Checkout[i].quantity, Checkout[i].price_per_kg);
+			sums += Checkout[i].price_per_kg;
+		}
+	}
+	if (sums!=0.0)
+		printf("Общая цена покупки равна - %.2lf", sums);
+}
