@@ -1,0 +1,152 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define  _USE_MATH_DEFINES
+#include <math.h>
+typedef double(*First)(double);
+typedef double(*Next)(int, double);
+
+
+
+void sravn(double x) {
+    while (x > 2.0 * M_PI)
+    {
+        x -= 2.0 * M_PI;
+    }
+    return x;
+}
+
+
+void menu(int* w) {
+    printf("1 - SIN\n");
+    printf("2 - COS\n");
+    printf("3 - TG\n");
+    printf("4 - Exit\n");
+    scanf_s("%d", w);
+}
+
+void first(int* x) {
+    printf("Vvedute first peremenny:\n");
+    scanf_s("%lf", x);
+}
+
+void kol_vo(int* n) {
+    printf("Vvedute kol-vo peremennux:\n");
+    scanf_s("%d", n);
+}
+
+double FirstSin(double x) {
+    return x;
+}
+double NextSin(int i, double x) {
+    return -x * x / (2 * i) / (2 * i + 1);
+}
+
+double FirstCos(double x) {
+    return 1;
+}
+double NextCos(int i, double x) {
+    return  -x * x / (2 * i) / (2 * i - 1);
+}
+
+double FirstTg(double x) {
+    return 1;
+}
+
+double NextTg(int i, double x) {
+    return (-x * x / (2 * i) / (2 * i + 1)) / -x * x / (2 * i) / (2 * i - 1);
+}
+
+
+double Teylor(double x, int n, First f, Next g, double etalon, double acc, int* count) {
+    double summ = f(x), elem = x, prew = f(x), chek;
+    for (int i = 1; i < n; i++) {
+        elem = prew * g(i, x);
+        summ += elem;
+        prew = elem;
+        *count += 1;
+        chek = summ - etalon;
+        if (chek < 0)
+        {
+            chek = -1 * chek;
+        }
+        if (chek < acc)
+        {
+            break;
+        }
+    }
+    return summ;
+}
+
+
+
+
+int main() {
+    int n, w, g, C = 0;
+    int count = 1;
+    double x, eps, etalon, ass;
+    menu(&w);
+    while ((w != 4) && (C == 0)) {
+        printf("Accuracy - \n");
+        scanf_s("%lf", &ass);
+        while (ass > 0.0 && ass < 0.000001)
+        {
+            printf("Incorrect input\n");
+            printf("Enter it again\n");
+            printf("Accuracy - \n");
+            scanf_s("%lf", &ass);
+        }
+        if (w == 1) {
+            C == 0;
+            first(&x);
+            kol_vo(&n);
+
+
+            etalon = sin(x);
+            sravn(x);
+            double y = Teylor(x, n, FirstSin, NextSin, etalon, ass, &count);
+            printf("The number of terms: %d\n", count);
+            printf("Reference value: %lf\n", sin(x));
+            printf("Calculated value estimate: %lf\n", y);
+            printf("The difference between the estimate and the reference value: %lf\n", y - sin(x));
+            printf("To finish, press 4\n");
+            scanf_s("%d", &g);
+            if (g == 4) {
+                C = 1;
+            }
+        }
+
+        if (w == 2) {
+            C == 0;
+            first(&x);
+            kol_vo(&n);
+            etalon = cos(x);
+            sravn(x);
+            double y = Teylor(x, n, FirstCos, NextCos, etalon, ass, &count);
+            printf("The number of terms: %d\n", count);
+            printf("Reference value: %lf\n", cos(x));
+            printf("Calculated value estimate: %lf\n", y);
+            printf("The difference between the estimate and the reference value: %lf\n", y - cos(x));
+            printf("To finish, press 4\n");
+            scanf_s("%d", &g);
+            if (g == 4) {
+                C = 1;
+            }
+        }
+
+        if (w == 3) {
+            C == 0;
+            first(&x);
+            etalon = tan(x);
+            double y = Teylor(x, n, FirstTg, NextTg, etalon, ass, &count);
+            printf("The number of terms: %d\n", count);
+            printf("Reference value: %lf\n", sin(x));
+            printf("Calculated value estimate: %lf\n", y);
+            printf("The difference between the estimate and the reference value: %lf\n", y - tan(x));
+            printf("To finish, press 4\n");
+            scanf_s("%d", &g);
+            if (g == 4) {
+                C = 1;
+            }
+        }
+    }
+}
