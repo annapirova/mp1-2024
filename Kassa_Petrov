@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <ctype.h>
+#include "string.h"
+
+struct Item
+{
+    char title[20];
+    double price;
+    double count;
+};
+    
+struct Item Sklad[10] = {
+  {"apple", 10.0, 20.0},
+  {"banana", 11.0, 21.0},
+  {"tomato", 12.0, 22.0},
+  {"potato", 13.0, 23.0},
+  {"cheese", 14.0, 24.0},
+  {"cabbage", 15.0, 25.0},
+  {"porridge", 16.0, 26.0},
+  {"apricot", 17.0, 27.0},
+  {"kiwi", 18.0, 28.0},
+  {"cola", 19.0, 29.0},
+};
+typedef struct Item Item;
+Item Check[10];
+double flag_get_max = 0;
+
+double find_price_and_count_on_sklad(char user_title[20], double user_count)
+{
+    int i;
+    for (i = 0; i < 10; i++)
+    {
+        if (((strcmp(Sklad[i].title, user_title)) == 0) && ((Sklad[i].count - user_count) > 0))
+        {
+            Sklad[i].count -= user_count;
+            return Sklad[i].price;
+        }
+        else if ((((strcmp(Sklad[i].title, user_title)) == 0) && ((Sklad[i].count - user_count) < 0) && (Sklad[i].count > 0)))
+        {
+            flag_get_max = Sklad[i].count;
+            Sklad[i].count = 0;
+            return Sklad[i].price; 
+        }
+    }
+    return -1;
+}
+
+int it_was_already_in_check(char user_title[20])
+{
+    int i;
+    int result = -1;
+    for (i = 0; i < 10; i++)
+    {
+        if ((strcmp(Check[i].title, user_title)) == 0)
+        {
+            result = i;
+            return result;
+        }
+    }
+    return result;
+}
+
+int main()
+{
+    int s;
+    int _;
+    char user[20];
+    char user_title[20];
+    double user_count = 0.0;
+    int i = 0;
+    int j = 0;
+    double mega_help;
+    printf("Enter count of products\n");
+    scanf_s("%d", &s);
+    for (_ = 0; _ < s; _++)
+    {
+        flag_get_max = 0;
+        scanf_s("%s", &user, 20);
+        if (isalpha(user[0]))
+        {
+            scanf_s("%lf", &user_count, 20);
+            sscanf(user, "%s", &user_title);
+        }
+        else
+        {
+            scanf_s("%s", &user_title, 20);
+            sscanf(user, "%lf", &user_count);
+        }
+        mega_help = find_price_and_count_on_sklad(user_title, user_count);
+        if (mega_help < 0)
+        {
+            printf("There are not enough \"%s\" on sklad\n", user_title);
+        }
+        else
+        {
+            if (flag_get_max != 0)
+            {
+                user_count = flag_get_max;
+            }
+            if (it_was_already_in_check(user_title) != -1)
+            {
+                Check[it_was_already_in_check(user_title)].count += user_count;
+                continue;
+            }
+            strcpy(Check[i].title, user_title);
+            Check[i].count = user_count; 
+            Check[i].price = mega_help;
+            i++;
+        }
+    }
+    printf("----------\n");
+    for (j = 0; j < i; j++)
+    {
+        printf("%s...%0.3lf*%0.3lf...%0.3lf\n", Check[j].title, Check[j].count, Check[j].price, Check[j].count * Check[j].price);
+    }
+    return 0;
+}
