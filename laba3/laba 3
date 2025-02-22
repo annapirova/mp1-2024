@@ -1,0 +1,171 @@
+#include "stdio.h"
+#include <stdlib.h>
+#include <string.h>
+#include "ctype.h"
+#include <math.h>
+#include <time.h>
+
+typedef struct shop
+{
+    int barcode;
+    char name[100];
+    double cena;
+    double kolvo;
+} shop;
+
+typedef struct tovar
+{
+    double kolvo;
+    char name[100];
+
+} tovar;
+
+char warehouse[][100] = { "jus", "cucumber", "apple", "milk" };
+int sklad = sizeof(warehouse) / sizeof(warehouse[0]);
+
+shop* object;
+tovar* abstract;
+
+int get_n() {
+    int n;
+    printf("Введите количество товаров\n");
+    scanf("%d", &n);
+    return n;
+}
+
+void magaz(shop object[], int size) {
+    srand(100);
+    srand(time(NULL));
+    int i, id_barcode = 1;
+    double pri, cou;
+    for (i = 0; i < size; i++) {
+        pri = rand() % 100 + 1;
+        cou = rand() % 100 + 1;
+        strcpy(object[i].name, warehouse[i]);
+        object[i].cena = pri;
+        object[i].kolvo = cou;
+        object[i].barcode = id_barcode;
+        id_barcode++;
+    }
+}
+
+void parse_str(char str[], int position, tovar a[]) {
+    double kolvo;
+    char name[100];
+    char sep[10] = " ,.!;";
+    char* istr;
+    istr = strtok(str, sep);
+    while (istr != NULL)
+    {
+        if (isdigit(*istr)) {
+            kolvo = atol(istr);
+        }
+        else {
+            strcpy(name, istr);
+        }
+        istr = strtok(NULL, sep);
+    }
+    strcpy(a[position - 1].name, name);
+    a[position - 1].kolvo = kolvo;
+}
+
+void print_struct(tovar object[], int size) {
+    for (int i = 0; i < size; i++) {
+        printf("%s %lf\n", object[i].name, object[i].kolvo);
+    }
+}
+
+int check_tovar(char* str) {
+    
+    for (int i = 0; i < sklad; i++) {
+        if (!strcmp(warehouse[i], str)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int get_id_tovar(char* str) {
+    for (int i = 0; i < sklad; i++) {
+        if (!strcmp(str, object[i].name)) {
+            return object[i].barcode;
+        }
+    }
+    return -1;
+}
+
+int check_tmp(tovar a[], int n, char* prod) {
+    for (int i = 0; i < n; i++) {
+        if (!strcmp(a[i].name, prod)) {
+            return i;
+        }
+    }
+    return -1;
+
+}
+
+void itog(tovar all[], int size) {
+    double su = 0.0;
+    abstract = (tovar*)malloc(sizeof(tovar) * sklad);
+    int n = 0;
+    for (int i = 0; i < size; i++) {
+        if (check_tovar(all[i].name)) {
+            int id = check_tmp(abstract, n, all[i].name);
+            if (id != -1) {
+                abstract[id].kolvo += all[i].kolvo;
+            }
+            else {
+                strcpy(abstract[n].name, all[i].name);
+                abstract[n].kolvo = all[i].kolvo;
+                n++;
+            }
+        }
+    }
+    printf("Nazvanie     cena     itog\n");
+    for (int i = 0; i < size; i++) {
+        if (check_tovar(abstract[i].name)) {
+            int id = get_id_tovar(abstract[i].name);
+            if (object[id - 1].kolvo >= abstract[i].kolvo) {
+                object[id - 1].kolvo -= abstract[i].kolvo;
+                printf("%s      %.2lf*%.2lf      %.2lf\n", object[id - 1].name, abstract[i].kolvo, object[id - 1].cena, object[id - 1].cena * abstract[i].kolvo);
+                su += object[id - 1].cena * abstract[i].kolvo;
+            }
+            else if (object[id - 1].kolvo > 0) {
+                printf("%s      %.2lf*%.2lf      %.2lf\n", object[id - 1].name, object[id - 1].kolvo, object[id - 1].cena, object[id - 1].cena * object[id - 1].kolvo);
+                su += object[id - 1].cena * object[id - 1].kolvo;
+                object[id - 1].kolvo = 0.0;
+            }
+        }
+    }
+
+    printf("Itogova summa:           %.2lf\n", su);
+}
+
+
+void print_cklad(shop object[], int size) {
+    for (int i = 0; i < size; i++) {
+        printf("%d  %s %.2lf  %.2lf\n", object[i].barcode, object[i].name, object[i].kolvo, object[i].cena);
+    }
+}
+
+
+
+int main() {
+    object = (shop*)malloc(sizeof(shop) * sklad);
+    magaz(object, sklad);
+    print_cklad(object, sklad);
+
+    int n = get_n();
+    tovar* a;
+    printf("Vvedite nazvanie(kak na sklade)     and     kolvo tovara (cherez probel)\n");
+    a = (tovar*)malloc(sizeof(tovar) * n);
+    for (int i = 0; i < n + 1; i++) {
+        char test[100];
+        gets(test);
+        parse_str(test, i, a);
+    }
+    itog(a, n);
+
+    return 0;
+
+}

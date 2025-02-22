@@ -1,0 +1,118 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+
+using namespace std;
+
+
+class Line {
+private:
+	int lin;
+public:
+	void fut( int n) {
+		lin = n;
+		lin = floor(lin * 0.3048);
+		cout << "Длина - " << endl;
+		cout << lin << endl;
+
+	}
+	void yadro( int n) {
+		lin = n;
+		lin = ceil(lin / 0.9144);
+		cout << "Длина - " << endl;
+		cout << lin << endl;
+	}
+
+	void arshin( int n) {
+		lin = n;
+		lin = round(lin / 0.7112);
+		cout << "Длина - " << endl;
+
+		cout << lin << endl;
+	}
+
+	
+
+	void vuvod(int n) {
+		lin = n;
+		cout << "Длинна - " << lin << endl;
+	}
+
+	Line(int n, int g) {
+
+		if (g == 1) {
+			fut(n);
+
+		}
+		else if (g == 2) {
+			yadro(n);
+
+		}
+		else if (g == 3) {
+			arshin(n);
+		}
+		get_info();
+	};
+
+
+	Line(int n) {
+
+		lin = n;
+		get_info();
+	};
+
+
+	void get_info() {
+		cout << "Dlina: " << lin << endl;
+	}
+};
+
+int main() {
+	setlocale(LC_ALL, "Russian");
+	int k = 0, n, p, g;
+	cout << "Длина начальная - ";
+	cin >> n;
+	Line x(n);
+	while (k != 4) {
+		
+		cout << "Vubery opciu" << endl;
+		cout << "1.установить текущую длину в метрах" << endl;
+		cout << "2.узнать текущую длину в метрах" << endl;
+		cout << "3.узнать текущую длину в выбранной единице измерения" << endl;
+		cout << "4.выход" << endl;
+		cin >> k;
+		if (k == 1) {
+			cout << "Vvedite dliny" << endl;
+			cin >> n;
+			x.vuvod(n);
+
+
+		}
+		else if (k == 2) {
+			x.get_info();
+
+
+
+		}
+		else if (k == 3) {
+			
+			cout << "Vuberite ed izmer" << endl;
+			cout << "1. fyt" << endl;
+			cout << "2. yadro" << endl;
+			cout << "3. arshin" << endl;
+			cin >> p;
+			Line x(n, p);
+			
+
+		}
+	}
+
+
+
+
+}
+
+
