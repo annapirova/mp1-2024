@@ -1,0 +1,137 @@
+#include <iostream>
+#include <vector>
+#include <stdexcept>
+
+#include <string>
+using namespace std;
+class Polynom {
+private:
+    int step; 
+    double* massive; 
+
+public:
+    Polynom() {}
+    Polynom(int n) {
+        step = n;
+        if (n < 0 || n > 100) {
+            throw out_of_range("Степень полинома должна быть в пределах от 0 до 100.");
+        }
+        massive = new double[n + 1] {0.0};
+    }
+    Polynom(const Polynom& v2) : step(v2.step) {
+        step = v2.step;
+        massive = new double[step + 1];
+        for (int i = 0; i <= step; i++) {
+            massive[i] = v2.massive[i];
+        }
+    }
+
+    
+    Polynom& operator=(const Polynom& v2) {
+        if (this != &v2) {
+            delete[] massive;
+            step = v2.step;
+            massive = new double[step + 1];
+            for (int i = 0; i <= step; i++) {
+                massive[i] = v2.massive[i];
+            }
+        }
+        return *this;
+    }
+
+   
+    ~Polynom() {
+        delete[] massive;
+    }
+
+   
+    void setstep(int n) {
+        if (n < 0 || n > 100) {
+            throw out_of_range("Степень полинома должна быть в пределах от 0 до 100.");
+        }
+        delete[] massive;
+        step = n;
+        massive = new double[step + 1] {0.0};
+    }
+
+   
+    void setmassive() {
+        for (int i = 0; i <= step; i++) {
+            cout << "Введите коэффициент для x^" << i << ": ";
+            cin >> massive[i];
+        }
+    }
+
+    
+    int getstep() const {
+        return step;
+    }
+
+    
+
+    double evaluate(double x) const {
+        double result = 0.0;
+        for (int i = step; i >= 0; i--) {
+            result = result * x + massive[i];
+        }
+        return result;
+    }
+
+    
+    Polynom v1ative() const {
+        if (step == 0) {
+            return Polynom(0); 
+        }
+        Polynom v1(step - 1);
+        for (int i = 1; i <= step; i++) {
+            v1.massive[i - 1] = massive[i] * i;
+        }
+        return v1;
+    }
+
+    
+    void print() const {
+        for (int i = step; i >= 0; i--) {
+            if (massive[i] != 0) {
+                cout << massive[i];
+                if (i > 0) {
+                    cout << "x^" << i;
+                }
+                if (i > 0) {
+                    cout << " + ";
+                }
+            }
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+
+    try {
+        int step;
+        cout << "Введите степень полинома (от 0 до 100): ";
+        cin>> step;
+
+        Polynom p(step);
+        p.setmassive();
+
+        cout << "Полином: ";
+        p.print();
+
+        cout << "Введите x для вычисления полинома: ";
+        double x;
+        cin >> x;
+        cout << "Значение полинома в x = " << x << ": " << p.evaluate(x) << std::endl;
+
+        Polynom v1 = p.v1ative();
+        cout << "Производная полинома: ";
+        v1.print();
+    }
+    catch (const exception& a) {
+        cerr << "Ошибка: " << a.what() <<endl;
+    }
+
+    return 0;
+}
