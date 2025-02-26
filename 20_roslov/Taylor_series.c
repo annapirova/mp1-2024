@@ -129,7 +129,7 @@ int main(){
             change_func(&type_func);
         }
         accuracy(&eps);
-        while (eps > 0.0 && eps < 0.000001)
+        while (!(0.000001 < eps))
         {
             printf("Неправильный ввод\n");
             printf("Повторите ввод\n");
