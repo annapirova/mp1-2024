@@ -194,6 +194,7 @@ void SerialMode() {
 
 int main() {
 	setlocale(LC_ALL, "Russian");
+	system("chcp 1251");
 
 	while (state != 255) {
 		printf("\n=================================\n");
