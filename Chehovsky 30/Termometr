@@ -1,0 +1,229 @@
+#include <iostream>
+#include <vector>
+#include <iomanip>
+#include <stdexcept>
+#include <algorithm>
+
+using namespace std;
+class Observation {
+public:
+    int day;
+    int month;
+    int year;
+    int hour;
+    float temperature;
+
+    Observation(int d, int m, int y, int h, float temp)
+        : day(d), month(m), year(y), hour(h), temperature(temp) {
+    }
+};
+
+class Thermometer {
+private:
+    vector<Observation> observations; // хранение наблюдения
+    int start_day, start_month, start_year;
+
+public:
+    void setStartDate(int day, int month, int year) {
+        start_day = day;
+        start_month = month;
+        start_year = year;
+    }
+
+    void getStartDate() const {
+        cout << "Начальная дата: " << start_day << "-" << start_month << "-" << start_year << std::endl;
+    }
+
+    void addObservation(int day, int month, int year, int hour, float temperature) {
+        for (auto& obs : observations) {
+            if (obs.day == day && obs.month == month && obs.year == year && obs.hour == hour) {
+                obs.temperature = temperature; // Обновление существующего наблюдения
+                return;
+            }
+        }
+        // Если наблюдение новое, добавляем его
+        observations.emplace_back(day, month, year, hour, temperature);
+    }
+
+    float getTemperature(int day, int month, int year, int hour) const {
+        for (const auto& obs : observations) {
+            if (obs.day == day && obs.month == month && obs.year == year && obs.hour == hour) {
+                return obs.temperature;
+            }
+        }
+        throw runtime_error("Наблюдение не найдено.");
+    }
+
+    void addSeriesObservations(int day, int month, int year, const vector<float>& temperatures) {
+        for (int hour = 0; hour < temperatures.size(); ++hour) {
+            addObservation(day, month, year, static_cast<int>(hour), temperatures[hour]);
+        }
+    }
+
+    double averageTemperatureByDate(int day, int month, int year) const {
+        double totalTemp = 0;
+        int count = 0;
+        for (const auto& obs : observations) {
+            if (obs.day == day && obs.month == month && obs.year == year) {
+                totalTemp += obs.temperature;
+                count++;
+            }
+        }
+        return count > 0 ? (totalTemp / count) : -1; // Если нет наблюдений, вернуть -1
+    }
+
+    double averageTemperatureForMonth(int month, int year) const {
+        double totalTemp = 0;
+        int count = 0;
+        for (const auto& obs : observations) {
+            if (obs.month == month && obs.year == year) {
+                totalTemp += obs.temperature;
+                count++;
+            }
+        }
+        return count > 0 ? (totalTemp / count) : -1; // Если нет наблюдений, вернуть -1
+    }
+
+    double averageDaytimeTemperature(int month, int year) const {
+        double totalTemp = 0;
+        int count = 0;
+        for (const auto& obs : observations) {
+            if (obs.month == month && obs.year == year && obs.hour >= 6 && obs.hour < 18) {
+                totalTemp += obs.temperature;
+                count++;
+            }
+        }
+        return count > 0 ? (totalTemp / count) : -1; // Если нет наблюдений, вернуть -1
+    }
+
+    double averageNighttimeTemperature(int month, int year) const {
+        double totalTemp = 0;
+        int count = 0;
+        for (const auto& obs : observations) {
+            if (obs.month == month && obs.year == year && (obs.hour < 6 || obs.hour >= 18)) {
+                totalTemp += obs.temperature;
+                count++;
+            }
+        }
+        return count > 0 ? (totalTemp / count) : -1; // Если нет наблюдений, вернуть -1
+    }
+
+    void displayObservations() const {
+        for (const auto& obs : observations) {
+            cout <<  obs.day << "-" << obs.month << "-" << obs.year << " "  << obs.hour << ":00" << " -> " << obs.temperature << " °C\n";
+        }
+    }
+};
+
+int main() {
+
+    setlocale(LC_ALL, "Russian");
+    Thermometer thermometer;
+    int choice, day, month, year, hour;
+    float temperature;
+
+    while (true) {
+        cout << "\n1. Установить начальную дату\n";
+        cout << "2. Узнать начальную дату\n";
+        cout << "3. Добавить наблюдение\n";
+        cout << "4. Узнать температуру по дате и времени\n";
+        cout << "5. Добавить серию наблюдений для выбранной даты\n";
+        cout << "6. Найти среднюю температуру за день\n";
+        cout << "7. Найти среднюю температуру за месяц\n";
+        cout << "8. Найти среднюю дневную температуру за месяц\n";
+        cout << "9. Найти среднюю ночную температуру за месяц\n";
+        cout << "10. Показать все наблюдения\n";
+        cout << "11. Выход\n";
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        try {
+            switch (choice) {
+            case 1:
+                cout << "Введите день, месяц, год: ";
+                cin >> day >> month >> year;
+                thermometer.setStartDate(day, month, year);
+                break;
+
+            case 2:
+                thermometer.getStartDate();
+                break;
+
+            case 3:
+                cout << "Введите день, месяц, год, час и температуру: ";
+                cin >> day >> month >> year >> hour >> temperature;
+                thermometer.addObservation(day, month, year, hour, temperature);
+                break;
+
+            case 4:
+                cout << "Введите день, месяц, год, час: ";
+                cin >> day >> month >> year >> hour;
+                cout << "Температура: " << thermometer.getTemperature(day, month, year, hour) << " °C\n";
+                break;
+
+            case 5: {
+                cout << "Введите день, месяц, год: ";
+                cin >> day >> month >> year;
+                int count;
+                cout << "Количество температур: ";
+                cin >> count;
+                vector<float> temperatures(count);
+                cout << "Введите температуры: ";
+                for (int i = 0; i < count; ++i) {
+                    cin >> temperatures[i];
+                }
+                thermometer.addSeriesObservations(day, month, year, temperatures);
+                break;
+            }
+
+            case 6:
+                cout << "Введите день, месяц, год: ";
+                cin >> day >> month >> year;
+                cout << "Средняя температура за "
+                    << day << "-" << month << "-" << year << ": "
+                    << thermometer.averageTemperatureByDate(day, month, year) << " °C\n";
+                break;
+
+            case 7:
+                cout << "Введите месяц и год: ";
+                cin >> month >> year;
+                cout << "Средняя температура за "
+                    << month << "-" << year << ": "
+                    << thermometer.averageTemperatureForMonth(month, year) << " °C\n";
+                break;
+
+            case 8:
+                cout << "Введите месяц и год: ";
+                cin >> month >> year;
+                cout << "Средняя дневная температура за " << month << "-" << year << ": "
+                    << thermometer.averageDaytimeTemperature(month, year) << " °C\n";
+                break;
+
+            case 9:
+                cout << "Введите месяц и год: ";
+                cin >> month >> year;
+                cout << "Средняя ночная температура за "
+                    << month << "-" << year << ": "
+                    << thermometer.averageNighttimeTemperature(month, year) << " °C\n";
+                break;
+
+            case 10:
+                cout << "Все наблюдения:\n";
+                thermometer.displayObservations();
+                break;
+
+            case 11:
+                cout << "Выход.\n";
+                return 0;
+
+            default:
+                cout << "Недопустимый выбор.\n";
+            }
+        }
+        catch (const exception& e) {
+            cout << "Ошибка: " << e.what() << std::endl;
+        }
+    }
+
+    return 0;
+}
