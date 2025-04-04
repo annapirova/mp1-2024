@@ -7,6 +7,8 @@
         "iosfwd": "cpp",
         "istream": "cpp",
         "string": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "tuple": "cpp",
+        "variant": "cpp"
     }
 }
