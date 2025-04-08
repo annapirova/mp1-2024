@@ -8,6 +8,8 @@
 
 using namespace std;
 
+vector <string> type_weaher = {"Солнечно", "Пасмурно", "Дождливо", "Ветренно"};
+
 typedef struct discover
 {
     int day;
@@ -47,14 +49,37 @@ bool check_command(string& str){
     return false;
 }
 
-bool check_weaher(string& str){
-    vector <string> type_weaher = {"Солнечно", "Пасмурно", "Дождливо", "Ветренно"};
-    for (int i = 0; i < type_weaher.size(); i++){
-        if (type_weaher[i] == str){
-            return true;
+
+int levenshteinDistance(const string &s1, const string &s2) {
+    const size_t len1 = s1.size(), len2 = s2.size();
+    vector<vector<int>> d(len1 + 1, vector<int>(len2 + 1));
+
+    for (size_t i = 0; i <= len1; ++i){
+        d[i][0] = i;
+    }
+    for (size_t j = 0; j <= len2; ++j){ 
+        d[0][j] = j;
+    }
+    for (size_t i = 1; i <= len1; ++i) {
+        for (size_t j = 1; j <= len2; ++j) {
+            int cost = (s1[i-1] == s2[j-1]) ? 0 : 1;
+            d[i][j] = min({ d[i-1][j] + 1,      // удаление
+                                 d[i][j-1] + 1,      // вставка
+                                 d[i-1][j-1] + cost  // замена
+                               });
         }
     }
-    return false;
+    return d[len1][len2];
+}
+
+
+int check_weaher(string& str){
+    for (int i = 0; i < type_weaher.size(); i++){
+        if (levenshteinDistance(type_weaher[i], str) <= 2){
+            return i;
+        }
+    }
+    return -1;
 }
 
 bool check_id(string& str){
@@ -89,8 +114,8 @@ class Thermometer{
                         id = stoi(arr[i].substr(arr[i].find("id:")+3));
                     }else if(check_temp(arr[i])){
                         temp = stod(arr[i]);
-                    } else if (check_weaher(arr[i])){
-                        weaher = arr[i];
+                    } else if (check_weaher(arr[i]) != -1){
+                        weaher = type_weaher[check_weaher(arr[i])];
                     }
                 }
                 if (id != -1){
@@ -370,9 +395,9 @@ class Thermometer{
                     }else if (check_temp(split_space[i])){
                         // all_info[fullness].temperature = stod(split_space[i]);
                         notes.temperature = stod(split_space[i]);
-                    }else if (check_weaher(split_space[i])){
+                    }else if (check_weaher(split_space[i]) != -1){
                         // all_info[fullness].specification = split_space[i];
-                        notes.specification = split_space[i];
+                        notes.specification = type_weaher[check_weaher(split_space[i])];
                     }
                 }
                 if (flag_command){
