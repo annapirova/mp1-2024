@@ -9,6 +9,8 @@
         "string": "cpp",
         "vector": "cpp",
         "tuple": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "random": "cpp",
+        "ostream": "cpp"
     }
 }
